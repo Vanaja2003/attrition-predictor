@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-{% load staticfiles %}
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Attrition Form fillup</title>
 </head>
 <body>
-<form method="post" action="" enctype="multipart/form-data"> <!-- {% url 'results_show' %} -->
+<form method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
     <div class="input-group mb-3">
         <span class="input-group-text" id="inputGroup-sizing-default"><h2>Name</h2></span>
@@ -103,5 +103,10 @@
         <button type="submit" name="attrition_button" value="Save&Next">Confirm Submission</button>
     </div>
 </form>
+
+{% if result %}
+<h2>The Attrition value is: {{ result }}!</h2>
+{% endif %}
+
 </body>
 </html>

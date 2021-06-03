@@ -1,17 +1,6 @@
 from django.shortcuts import render, redirect
-from .models import Attrition_table
-
 import pandas as pd
 import pickle, os, random
-
-val = None
-
-def results(request):
-    ok = val()
-    ok = str(ok[0])
-    return render(request, 'show_people.html', {'result': ok})
-
-
 
 # Finding attrition rate:
 def Attrition_rate_finder(request):
@@ -31,28 +20,14 @@ def Attrition_rate_finder(request):
             Job = request.POST['Job']
             # print(name)
 
-            try:
-                var = Attrition_table(name=name, location=location, emp_group=emp_group,
-                                      function=function, gender=gender, tenure_group=tenure_group,
-                                      experience=experience, age=age, maritial=Maritial, hiring_source=
-                                      Hiring, promoted_before=Promoted, job_role=Job)
-                var.save()
-                result = Finder(name, location, emp_group, function, gender, tenure_group,
+            results = Finder(name, location, emp_group, function, gender, tenure_group,
                                       experience, age, Maritial, Hiring, Promoted, Job)
-                print(result)
-                global val
-
-                def val():
-                    return result
-                return redirect('results_show')
-            except:
-                print("Error Has occurred")
+            print(results)
+            results = str(results[0])
         else:
             print('Not Working')
-    else:
-        print('Not Working')
 
-    return render(request, 'attrition_form.html')
+    return render(request, 'attrition_form.html', {'result': results})
 
 
 def Finder(name, location, emp_group, function, gender, tenure_group,
@@ -91,7 +66,6 @@ def Finder(name, location, emp_group, function, gender, tenure_group,
 
     else:
         return None
-
 
 def Co():
     return random.randrange(20, 500)
