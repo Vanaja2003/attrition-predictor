@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 import pandas as pd
 import pickle, os, random
 import traceback
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
 from .models import AttritionPrediction
@@ -74,12 +74,23 @@ def Attrition_rate_finder(request):
                     print("Prediction returned None")
                     results = None
 
-        print("Rendering template with results:", results)
-        return render(request, 'attrition_form.html', {'result': results})
-    except Exception as e:
-        print("Error in Attrition_rate_finder:", str(e))
-        print("Traceback:", traceback.format_exc())
-        return render(request, 'attrition_form.html', {'result': None, 'error': str(e)})
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'result': results,
+                    'success': True
+                })
+            
+            return render(request, 'attrition_form.html', {'result': results})
+            
+        except Exception as e:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'error': str(e),
+                    'success': False
+                })
+            return render(request, 'attrition_form.html', {'error': str(e)})
+    
+    return render(request, 'attrition_form.html')
 
 def prediction_history(request):
     try:

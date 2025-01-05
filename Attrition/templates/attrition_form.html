@@ -17,7 +17,7 @@
 
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <form method="post" action="" class="needs-validation" novalidate>
+            <form id="attritionForm" method="post" action="" class="needs-validation" novalidate>
                 {% csrf_token %}
                 
                 <div class="row">
@@ -141,7 +141,7 @@
                 </div>
 
                 <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-primary btn-lg px-5" name="attrition_button" value="predict">
+                    <button type="submit" class="btn btn-primary btn-lg px-5" id="predictButton">
                         Predict Attrition
                     </button>
                 </div>
@@ -149,21 +149,14 @@
         </div>
     </div>
 
-    {% if result %}
-    <div class="card shadow-sm mb-4" id="predictionResult">
+    <!-- Prediction Result Section -->
+    <div class="card shadow-sm mb-4" id="predictionResult" style="display: none;">
         <div class="card-body">
-            <div class="{% if result == 'Yes' %}text-warning{% else %}text-success{% endif %} text-center">
-                <h4 class="mb-3">Prediction Result</h4>
-                <p class="display-6 mb-2">Attrition Prediction: {{ result }}</p>
-                {% if result == 'Yes' %}
-                <p class="mb-0">This employee might be at risk of leaving.</p>
-                {% else %}
-                <p class="mb-0">This employee is likely to stay.</p>
-                {% endif %}
+            <div id="resultContent" class="text-center">
+                <!-- Results will be inserted here by JavaScript -->
             </div>
         </div>
     </div>
-    {% endif %}
 
     <!-- Developer Options -->
     <div class="card shadow-sm mb-4">
@@ -184,11 +177,51 @@
 </div>
 
 <script>
-{% if result %}
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('predictionResult').scrollIntoView({ behavior: 'smooth', block: 'center' });
+document.getElementById('attritionForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const formData = new FormData(form);
+    const resultSection = document.getElementById('predictionResult');
+    const resultContent = document.getElementById('resultContent');
+    
+    fetch('', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Update result content
+        resultContent.innerHTML = `
+            <h4 class="mb-3">Prediction Result</h4>
+            <p class="display-6 mb-2">Attrition Prediction: ${data.result}</p>
+            <p class="mb-0">${data.result === 'Yes' ? 
+                'This employee might be at risk of leaving.' : 
+                'This employee is likely to stay.'}</p>
+        `;
+        
+        // Set appropriate text color
+        resultContent.className = data.result === 'Yes' ? 'text-warning text-center' : 'text-success text-center';
+        
+        // Show result section and scroll to it
+        resultSection.style.display = 'block';
+        resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        resultContent.innerHTML = `
+            <div class="text-danger">
+                <h4 class="mb-3">Error</h4>
+                <p>An error occurred while processing your request. Please try again.</p>
+            </div>
+        `;
+        resultSection.style.display = 'block';
+        resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
-{% endif %}
+});
 
 function populateTestData() {
     document.getElementById('personName').value = 'John Doe';
