@@ -1,112 +1,188 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
 {% load static %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Attrition Form fillup</title>
-</head>
-<body>
-<form method="post" action="" enctype="multipart/form-data">
-        {% csrf_token %}
-    <div class="input-group mb-3">
-        <span class="input-group-text" id="inputGroup-sizing-default"><h2>Name</h2></span>
-        <input name="Person Name" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-    </div>
-    <br><hr>
-    <h3>Currectly living at: </h3>
-    <select name="location" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
-        <option selected>Open this select menu</option>
-        <option value="7">Chennai</option>
-        <option value="6">Noida</option>
-        <option value="5">Bangalore</option>
-        <option value="4">Hydrabad</option>
-        <option value="3">Pune</option>
-        <option value="2">Madurai</option>
-        <option value="1">Other Place</option>
-    </select>
-    <br><hr>
-    <h3>Current Employee Group : </h3>
-    <select name="emp-group" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
-        <option selected>Open this select menu</option>
-        <option value="B1">B1</option>
-        <option value="B2">B2</option>
-        <option value="B3">B3</option>
-        <option value="other group">Other Group</option>
-    </select>
-    <br><hr>
-    <h3>Current Working Function: </h3>
-    <select name="function" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
-        <option selected>Open this select menu</option>
-        <option value="Support">Support</option>
-        <option value="Operation">Operation</option>
-        <option value="Sales">Sales</option>
-    </select>
-    <br><hr>
-    <h3>Gender: </h3>
-    <select name="gender" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
-        <option selected>Open this select menu</option>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-        <option value="other">Other</option>
-    </select>
-    <br><hr>
-    <h3>Select your Tenure Group: </h3>
-    <select name="tenure group" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
-        <option selected>Open this select menu</option>
-        <option value="< =1">< =1 (in years)</option>
-        <option value="> 1 & < =3">> 1 & < =3 (in years)</option>
-    </select>
-    <br><hr>
-    <h3>Experience in Industry: </h3>
-    <div class="input-group mb-3">
-        <span class="input-group-text">Years</span>
-        <input name="experience" type="text" class="form-control" aria-label="Dollar amount (with dot and two decimal places)">
-    </div>
-    <br><hr>
-    <h3>Your Age: </h3>
-    <div class="input-group mb-3">
-        <span class="input-group-text">Years</span>
-        <input name="age" type="text" class="form-control" aria-label="Dollar amount (with dot and two decimal places)">
-    </div>
-    <br><hr>
-    <h3>Marital Status: </h3>
-    <select name="Marital" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
-        <option selected>Open this select menu</option>
-        <option value="Marr.">Marr.</option>
-        <option value="Single">Single</option>
-        <option value="Other status">Other status</option>
-    </select>
-    <br><hr>
-    <h3>Source of Hiring: </h3>
-    <select name="Hiring" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
-        <option selected>Open this select menu</option>
-        <option value="Agency">Agency</option>
-        <option value="Direct">Direct</option>
-        <option value="Employee Referral">Employee Referral</option>
-    </select>
-    <br><hr>
-    <h3>Have been promoted before: </h3>
-    <select name="Promoted" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
-        <option selected>Open this select menu</option>
-        <option value="1">Promoted</option>
-        <option value="0">Not Promoted</option>
-    </select>
-    <br><hr>
-    <h3>Does the Job Role matches according to employee: </h3>
-    <select name="Job" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
-        <option selected>Open this select menu</option>
-        <option value="1">Job Role matches</option>
-        <option value="0">Job Role does not match</option>
-    </select>
-    <br><hr>
-    <div class="col-auto">
-        <button type="submit" name="attrition_button" value="Save&Next">Confirm Submission</button>
-    </div>
-</form>
 
-{% if result %}
-<h2>The Attrition value is: {{ result }}!</h2>
-{% endif %}
+{% block title %}Attrition Prediction Form{% endblock %}
 
-</body>
-</html>
+{% block content %}
+<div class="container mt-4">
+    <div class="form-header text-center mb-4">
+        <h1>Employee Attrition Prediction</h1>
+        <div class="mt-3">
+            <button type="button" class="btn btn-secondary me-2" onclick="populateTestData()">Fill with Test Data</button>
+            <button type="button" class="btn btn-primary" onclick="populateTrueTestData()">Fill with True Test Data</button>
+        </div>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-danger mb-4">
+        <strong>Error:</strong> {{ error }}
+    </div>
+    {% endif %}
+
+    {% if result %}
+    <div class="alert {% if result == 'Yes' %}alert-warning{% else %}alert-success{% endif %} mb-4 text-center">
+        <h4 class="alert-heading mb-0">Prediction Result</h4>
+        <p class="display-6 mb-0">Attrition Prediction: {{ result }}</p>
+        {% if result == 'Yes' %}
+        <p class="mb-0 mt-2">This employee might be at risk of leaving.</p>
+        {% else %}
+        <p class="mb-0 mt-2">This employee is likely to stay.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post" action="" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="personName" class="form-label">Employee Name</label>
+                    <input type="text" class="form-control" id="personName" name="Person Name" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="location" class="form-label">Location</label>
+                    <select class="form-select" id="location" name="location" required>
+                        <option value="">Select Location</option>
+                        <option value="Bangalore">Bangalore</option>
+                        <option value="Pune">Pune</option>
+                        <option value="New Delhi">New Delhi</option>
+                        <option value="Chennai">Chennai</option>
+                        <option value="Noida">Noida</option>
+                        <option value="Hyderabad">Hyderabad</option>
+                        <option value="Madurai">Madurai</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="empGroup" class="form-label">Employee Group</label>
+                    <select class="form-select" id="empGroup" name="emp-group" required>
+                        <option value="">Select Employee Group</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="function" class="form-label">Function</label>
+                    <select class="form-select" id="function" name="function" required>
+                        <option value="">Select Function</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Operation">Operation</option>
+                        <option value="Support">Support</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="gender" class="form-label">Gender</label>
+                    <select class="form-select" id="gender" name="gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="tenureGroup" class="form-label">Tenure Group</label>
+                    <select class="form-select" id="tenureGroup" name="tenure group" required>
+                        <option value="">Select Tenure Group</option>
+                        <option value="<=1">&lt;=1</option>
+                        <option value="1-2">1-2</option>
+                        <option value="2-5">2-5</option>
+                        <option value=">5">&gt;5</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="experience" class="form-label">Experience (Years)</label>
+                    <input type="number" class="form-control" id="experience" name="experience" required min="0" max="50" step="0.1">
+                </div>
+
+                <div class="mb-3">
+                    <label for="age" class="form-label">Age</label>
+                    <input type="number" class="form-control" id="age" name="age" required min="18" max="100">
+                </div>
+
+                <div class="mb-3">
+                    <label for="marital" class="form-label">Marital Status</label>
+                    <select class="form-select" id="marital" name="Marital" required>
+                        <option value="">Select Marital Status</option>
+                        <option value="Single">Single</option>
+                        <option value="Married">Married</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="hiring" class="form-label">Hiring Source</label>
+                    <select class="form-select" id="hiring" name="Hiring" required>
+                        <option value="">Select Hiring Source</option>
+                        <option value="Direct">Direct</option>
+                        <option value="Employee Referral">Employee Referral</option>
+                        <option value="Agency">Agency</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="promoted" class="form-label">Promoted in Last 24 Months</label>
+                    <select class="form-select" id="promoted" name="Promoted" required>
+                        <option value="">Select Promotion Status</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="job" class="form-label">Job Role Match</label>
+                    <select class="form-select" id="job" name="Job" required>
+                        <option value="">Select Job Role Match</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg px-5" name="attrition_button" value="predict">
+                        Predict Attrition
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    function populateTestData() {
+        document.getElementById('personName').value = 'John Doe';
+        document.getElementById('location').value = 'Bangalore';
+        document.getElementById('empGroup').value = 'A';
+        document.getElementById('function').value = 'Sales';
+        document.getElementById('gender').value = 'Male';
+        document.getElementById('tenureGroup').value = '2-5';
+        document.getElementById('experience').value = '5';
+        document.getElementById('age').value = '30';
+        document.getElementById('marital').value = 'Single';
+        document.getElementById('hiring').value = 'Direct';
+        document.getElementById('promoted').value = 'No';
+        document.getElementById('job').value = 'No';
+    }
+
+    function populateTrueTestData() {
+        document.getElementById('personName').value = 'Jane Smith';
+        document.getElementById('location').value = 'Pune';
+        document.getElementById('empGroup').value = 'B';
+        document.getElementById('function').value = 'Operation';
+        document.getElementById('gender').value = 'Female';
+        document.getElementById('tenureGroup').value = '1-2';
+        document.getElementById('experience').value = '3';
+        document.getElementById('age').value = '28';
+        document.getElementById('marital').value = 'Married';
+        document.getElementById('hiring').value = 'Employee Referral';
+        document.getElementById('promoted').value = 'Yes';
+        document.getElementById('job').value = 'Yes';
+    }
+    </script>
+</div>
+{% endblock %}
