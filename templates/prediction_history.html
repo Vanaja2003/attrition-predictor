@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Prediction History{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Prediction History</h1>
+
+    {% if predictions %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Employee Name</th>
+                    <th>Location</th>
+                    <th>Function</th>
+                    <th>Experience</th>
+                    <th>Age</th>
+                    <th>Prediction</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prediction in predictions %}
+                <tr>
+                    <td>{{ prediction.prediction_date|date:"M d, Y H:i" }}</td>
+                    <td>{{ prediction.employee_name }}</td>
+                    <td>{{ prediction.location }}</td>
+                    <td>{{ prediction.function }}</td>
+                    <td>{{ prediction.experience }} years</td>
+                    <td>{{ prediction.age }}</td>
+                    <td>
+                        <span class="badge {% if prediction.prediction_result %}bg-warning{% else %}bg-success{% endif %}">
+                            {% if prediction.prediction_result %}At Risk{% else %}Not At Risk{% endif %}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        No predictions have been made yet. <a href="{% url 'attrition_show' %}" class="alert-link">Make a prediction</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
