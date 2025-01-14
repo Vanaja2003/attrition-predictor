@@ -12,6 +12,13 @@
         <button type="button" class="btn btn-success" onclick="fillLowRiskScenario()">Fill with Low Risk Scenario</button>
     </div>
 
+    {% if error %}
+    <div class="alert alert-danger">
+        <h4 class="alert-heading">Error</h4>
+        <p>{{ error }}</p>
+    </div>
+    {% endif %}
+
     <div class="card">
         <div class="card-body">
             <form method="post" class="needs-validation" novalidate>
@@ -20,62 +27,115 @@
                 <div class="row g-3">
                     <!-- Personal Information -->
                     <div class="col-md-6">
-                        <label for="employee_name" class="form-label">Employee Name</label>
+                        <label for="employee_name" class="form-label">Employee Name*</label>
                         <input type="text" class="form-control" id="employee_name" name="employee_name" required>
                     </div>
                     
                     <div class="col-md-6">
-                        <label for="age" class="form-label">Age</label>
+                        <label for="age" class="form-label">Age*</label>
                         <input type="number" class="form-control" id="age" name="age" min="18" max="100" required>
                     </div>
 
-                    <!-- Job Related Information -->
                     <div class="col-md-6">
-                        <label for="department" class="form-label">Department</label>
-                        <select class="form-select" id="department" name="department" required>
+                        <label for="gender" class="form-label">Gender*</label>
+                        <select class="form-select" id="gender" name="gender" required>
                             <option value="">Choose...</option>
-                            <option value="sales">Sales</option>
-                            <option value="hr">Human Resources</option>
-                            <option value="rd">Research & Development</option>
-                            <option value="it">Information Technology</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
                         </select>
                     </div>
 
                     <div class="col-md-6">
-                        <label for="job_role" class="form-label">Job Role</label>
-                        <input type="text" class="form-control" id="job_role" name="job_role" required>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="monthly_income" class="form-label">Monthly Income</label>
-                        <input type="number" class="form-control" id="monthly_income" name="monthly_income" min="0" required>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="years_at_company" class="form-label">Years at Company</label>
-                        <input type="number" class="form-control" id="years_at_company" name="years_at_company" min="0" step="0.1" required>
-                    </div>
-
-                    <!-- Work Environment -->
-                    <div class="col-md-6">
-                        <label for="job_satisfaction" class="form-label">Job Satisfaction (1-4)</label>
-                        <select class="form-select" id="job_satisfaction" name="job_satisfaction" required>
+                        <label for="marital_status" class="form-label">Marital Status*</label>
+                        <select class="form-select" id="marital_status" name="marital_status" required>
                             <option value="">Choose...</option>
-                            <option value="1">1 - Low</option>
-                            <option value="2">2 - Medium</option>
-                            <option value="3">3 - High</option>
-                            <option value="4">4 - Very High</option>
+                            <option value="Single">Single</option>
+                            <option value="Married">Married</option>
+                            <option value="Divorced">Divorced</option>
+                        </select>
+                    </div>
+
+                    <!-- Location and Department -->
+                    <div class="col-md-6">
+                        <label for="location" class="form-label">Location*</label>
+                        <select class="form-select" id="location" name="location" required>
+                            <option value="">Choose...</option>
+                            <option value="Bangalore">Bangalore</option>
+                            <option value="Mumbai">Mumbai</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Hyderabad">Hyderabad</option>
+                            <option value="Chennai">Chennai</option>
                         </select>
                     </div>
 
                     <div class="col-md-6">
-                        <label for="work_life_balance" class="form-label">Work Life Balance (1-4)</label>
-                        <select class="form-select" id="work_life_balance" name="work_life_balance" required>
+                        <label for="function" class="form-label">Function*</label>
+                        <select class="form-select" id="function" name="function" required>
                             <option value="">Choose...</option>
-                            <option value="1">1 - Poor</option>
-                            <option value="2">2 - Fair</option>
-                            <option value="3">3 - Good</option>
-                            <option value="4">4 - Excellent</option>
+                            <option value="Sales">Sales</option>
+                            <option value="IT">IT</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="HR">HR</option>
+                            <option value="Operations">Operations</option>
+                        </select>
+                    </div>
+
+                    <!-- Employment Details -->
+                    <div class="col-md-6">
+                        <label for="emp_group" class="form-label">Employee Group*</label>
+                        <select class="form-select" id="emp_group" name="emp_group" required>
+                            <option value="">Choose...</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="tenure_group" class="form-label">Tenure Group*</label>
+                        <select class="form-select" id="tenure_group" name="tenure_group" required>
+                            <option value="">Choose...</option>
+                            <option value="< =1">Less than 1 year</option>
+                            <option value="1-2">1-2 years</option>
+                            <option value="2-5">2-5 years</option>
+                            <option value="5-10">5-10 years</option>
+                            <option value=">10">More than 10 years</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="experience" class="form-label">Total Experience (years)*</label>
+                        <input type="number" class="form-control" id="experience" name="experience" min="0" step="0.5" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="hiring_source" class="form-label">Hiring Source*</label>
+                        <select class="form-select" id="hiring_source" name="hiring_source" required>
+                            <option value="">Choose...</option>
+                            <option value="Direct">Direct</option>
+                            <option value="Referral">Referral</option>
+                            <option value="Agency">Agency</option>
+                            <option value="Campus">Campus</option>
+                        </select>
+                    </div>
+
+                    <!-- Career Progress -->
+                    <div class="col-md-6">
+                        <label for="promoted" class="form-label">Recently Promoted?*</label>
+                        <select class="form-select" id="promoted" name="promoted" required>
+                            <option value="">Choose...</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="job_role_match" class="form-label">Job Role Match?*</label>
+                        <select class="form-select" id="job_role_match" name="job_role_match" required>
+                            <option value="">Choose...</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
                         </select>
                     </div>
                 </div>
@@ -88,17 +148,30 @@
         </div>
     </div>
 
-    {% if prediction_result is not None %}
+    {% if prediction is not None %}
     <div class="mt-4">
-        <div class="alert {% if prediction_result %}alert-warning{% else %}alert-success{% endif %}">
+        <div class="alert {% if prediction.prediction_result %}alert-warning{% else %}alert-success{% endif %}">
             <h4 class="alert-heading">Prediction Result</h4>
-            <p>Based on the provided information, this employee is 
-                {% if prediction_result %}
-                <strong>at risk of attrition</strong>. Consider scheduling a meeting to discuss their job satisfaction and career growth opportunities.
-                {% else %}
-                <strong>not at risk of attrition</strong>. Continue providing a supportive work environment to maintain their engagement.
-                {% endif %}
-            </p>
+            <p>Based on the provided information, {{ prediction.employee_name }} is at <strong>{{ prediction.risk_level }}</strong></p>
+            <p>Risk Score: {{ risk_score }}%</p>
+            <hr>
+            <h5>Recommended Actions:</h5>
+            {% if prediction.prediction_result %}
+            <ul>
+                <li>Schedule a one-on-one meeting to discuss job satisfaction and concerns</li>
+                <li>Review current role and responsibilities</li>
+                <li>Explore career development opportunities</li>
+                <li>Consider compensation and benefits review</li>
+                <li>Implement a retention plan with regular check-ins</li>
+            </ul>
+            {% else %}
+            <ul>
+                <li>Continue providing regular feedback and support</li>
+                <li>Maintain engagement through ongoing development opportunities</li>
+                <li>Recognize and reward good performance</li>
+                <li>Keep communication channels open</li>
+            </ul>
+            {% endif %}
         </div>
     </div>
     {% endif %}
@@ -124,25 +197,33 @@
 // Function to fill form with high risk scenario
 function fillHighRiskScenario() {
     document.getElementById('employee_name').value = 'John Smith';
-    document.getElementById('age').value = '45';
-    document.getElementById('department').value = 'sales';
-    document.getElementById('job_role').value = 'Sales Representative';
-    document.getElementById('monthly_income').value = '3500';
-    document.getElementById('years_at_company').value = '1.5';
-    document.getElementById('job_satisfaction').value = '1';
-    document.getElementById('work_life_balance').value = '1';
+    document.getElementById('age').value = '25';
+    document.getElementById('gender').value = 'Male';
+    document.getElementById('marital_status').value = 'Single';
+    document.getElementById('location').value = 'Bangalore';
+    document.getElementById('function').value = 'Sales';
+    document.getElementById('emp_group').value = 'C';
+    document.getElementById('tenure_group').value = '< =1';
+    document.getElementById('experience').value = '2';
+    document.getElementById('hiring_source').value = 'Agency';
+    document.getElementById('promoted').value = 'No';
+    document.getElementById('job_role_match').value = 'No';
 }
 
 // Function to fill form with low risk scenario
 function fillLowRiskScenario() {
-    document.getElementById('employee_name').value = 'Emma Johnson';
-    document.getElementById('age').value = '32';
-    document.getElementById('department').value = 'rd';
-    document.getElementById('job_role').value = 'Senior Developer';
-    document.getElementById('monthly_income').value = '8500';
-    document.getElementById('years_at_company').value = '5.5';
-    document.getElementById('job_satisfaction').value = '4';
-    document.getElementById('work_life_balance').value = '4';
+    document.getElementById('employee_name').value = 'Jane Doe';
+    document.getElementById('age').value = '45';
+    document.getElementById('gender').value = 'Female';
+    document.getElementById('marital_status').value = 'Married';
+    document.getElementById('location').value = 'Chennai';
+    document.getElementById('function').value = 'IT';
+    document.getElementById('emp_group').value = 'A';
+    document.getElementById('tenure_group').value = '5-10';
+    document.getElementById('experience').value = '15';
+    document.getElementById('hiring_source').value = 'Direct';
+    document.getElementById('promoted').value = 'Yes';
+    document.getElementById('job_role_match').value = 'Yes';
 }
 </script>
 {% endblock %}

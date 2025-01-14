@@ -4,6 +4,67 @@
 
 {% block title %}Attrition Insights{% endblock %}
 
+{% block extra_css %}
+<style>
+    .metric-scale {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+    }
+    .progress {
+        background-color: #e9ecef;
+    }
+    .progress-bar {
+        font-size: 0.875rem;
+        line-height: 1.2;
+        font-weight: 500;
+        position: relative;
+    }
+    .metric-value {
+        min-width: 60px;
+        display: inline-block;
+    }
+    .progress-label {
+        position: absolute;
+        right: 8px;
+        color: white;
+        font-weight: 600;
+        text-shadow: 0 0 2px rgba(0,0,0,0.5);
+    }
+    .metric-percentage {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-left: 8px;
+    }
+    /* Table styles */
+    .table {
+        color: #212529;  /* Dark text color */
+    }
+    .table tbody tr {
+        color: inherit;
+    }
+    .table td {
+        color: #212529;  /* Ensure td text is dark */
+    }
+    .prediction-history-table {
+        color: black !important;
+    }
+    .prediction-history-table td,
+    .prediction-history-table th {
+        color: black !important;
+    }
+    .prediction-history-table tbody tr {
+        color: black !important;
+    }
+    .badge.bg-warning {
+        color: #212529 !important;
+    }
+    .badge.bg-success {
+        color: #fff !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <h1 class="mb-4">Attrition Insights</h1>
@@ -52,19 +113,19 @@
                     <thead class="table-light">
                         <tr>
                             <th>Department</th>
-                            <th>Total Employees</th>
-                            <th>High Risk</th>
-                            <th>Low Risk</th>
+                            <th class="text-center">Total Employees</th>
+                            <th class="text-center">High Risk</th>
+                            <th class="text-center">Low Risk</th>
                             <th style="width: 30%;">Risk Distribution</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for dept in department_analysis %}
+                        {% for dept in function_analysis %}
                         <tr>
-                            <td class="align-middle"><strong>{{ dept.department|title }}</strong></td>
-                            <td class="align-middle">{{ dept.total }}</td>
-                            <td class="align-middle">{{ dept.high_risk }} ({{ dept.high_risk_percentage|floatformat:1 }}%)</td>
-                            <td class="align-middle">{{ dept.low_risk }} ({{ dept.low_risk_percentage|floatformat:1 }}%)</td>
+                            <td class="align-middle"><strong>{{ dept.function|title }}</strong></td>
+                            <td class="align-middle text-center">{{ dept.total }}</td>
+                            <td class="align-middle text-center">{{ dept.high_risk }} ({{ dept.high_risk_percentage|floatformat:1 }}%)</td>
+                            <td class="align-middle text-center">{{ dept.low_risk }} ({{ dept.low_risk_percentage|floatformat:1 }}%)</td>
                             <td class="align-middle">
                                 <div class="d-flex align-items-center">
                                     <div class="progress flex-grow-1" style="height: 24px;">
@@ -102,6 +163,10 @@
                                 </div>
                             </td>
                         </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No department data available</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -109,8 +174,8 @@
         </div>
     </div>
 
-    <!-- Comparative Analysis -->
-    <div class="card">
+    <!-- Risk Metrics -->
+    <div class="card mb-4">
         <div class="card-header bg-light">
             <h3 class="card-title mb-0">High Risk vs Low Risk Profile</h3>
         </div>
@@ -126,146 +191,77 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="align-middle"><strong>Age</strong></td>
+                            <td class="align-middle">
+                                <strong>Age</strong>
+                                <div class="metric-scale">Scaled relative to 60 years</div>
+                            </td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <span class="me-2">{{ high_risk_metrics.avg_age|floatformat:1 }}</span>
-                                    <div class="progress flex-grow-1" style="height: 20px;">
+                                    <span class="metric-value me-2">{{ high_risk_metrics.avg_age|default:'-'|floatformat:1 }}</span>
+                                    <div class="progress flex-grow-1" style="height: 24px;">
                                         <div class="progress-bar bg-warning" role="progressbar" 
-                                             style="width: {{ high_risk_metrics.avg_age|multiply:1.67|floatformat:1 }}%;" 
-                                             aria-valuenow="{{ high_risk_metrics.avg_age }}" 
+                                             style="width: {{ high_risk_metrics.avg_age|default:0|multiply:1.67|floatformat:1 }}%;" 
+                                             aria-valuenow="{{ high_risk_metrics.avg_age|default:0 }}" 
                                              aria-valuemin="0" 
                                              aria-valuemax="60">
+                                            <span class="progress-label">{{ high_risk_metrics.avg_age|default:0|multiply:1.67|floatformat:0 }}%</span>
                                         </div>
                                     </div>
                                 </div>
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <span class="me-2">{{ low_risk_metrics.avg_age|floatformat:1 }}</span>
-                                    <div class="progress flex-grow-1" style="height: 20px;">
+                                    <span class="metric-value me-2">{{ low_risk_metrics.avg_age|default:'-'|floatformat:1 }}</span>
+                                    <div class="progress flex-grow-1" style="height: 24px;">
                                         <div class="progress-bar bg-success" role="progressbar" 
-                                             style="width: {{ low_risk_metrics.avg_age|multiply:1.67|floatformat:1 }}%;" 
-                                             aria-valuenow="{{ low_risk_metrics.avg_age }}" 
+                                             style="width: {{ low_risk_metrics.avg_age|default:0|multiply:1.67|floatformat:1 }}%;" 
+                                             aria-valuenow="{{ low_risk_metrics.avg_age|default:0 }}" 
                                              aria-valuemin="0" 
                                              aria-valuemax="60">
+                                            <span class="progress-label">{{ low_risk_metrics.avg_age|default:0|multiply:1.67|floatformat:0 }}%</span>
                                         </div>
                                     </div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <td class="align-middle"><strong>Monthly Income</strong></td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <span class="me-2">${{ high_risk_metrics.avg_income|floatformat:0 }}</span>
-                                    <div class="progress flex-grow-1" style="height: 20px;">
-                                        <div class="progress-bar bg-warning" role="progressbar" 
-                                             style="width: {{ high_risk_metrics.avg_income|multiply:0.01|floatformat:1 }}%;" 
-                                             aria-valuenow="{{ high_risk_metrics.avg_income }}" 
-                                             aria-valuemin="0" 
-                                             aria-valuemax="10000">
-                                        </div>
-                                    </div>
-                                </div>
+                            <td class="align-middle">
+                                <strong>Experience</strong>
+                                <div class="metric-scale">Scaled relative to 10 years</div>
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <span class="me-2">${{ low_risk_metrics.avg_income|floatformat:0 }}</span>
-                                    <div class="progress flex-grow-1" style="height: 20px;">
-                                        <div class="progress-bar bg-success" role="progressbar" 
-                                             style="width: {{ low_risk_metrics.avg_income|multiply:0.01|floatformat:1 }}%;" 
-                                             aria-valuenow="{{ low_risk_metrics.avg_income }}" 
-                                             aria-valuemin="0" 
-                                             aria-valuemax="10000">
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="align-middle"><strong>Years at Company</strong></td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <span class="me-2">{{ high_risk_metrics.avg_years|floatformat:1 }}</span>
-                                    <div class="progress flex-grow-1" style="height: 20px;">
+                                    <span class="metric-value me-2">{{ high_risk_metrics.avg_experience|default:'-'|floatformat:1 }}</span>
+                                    <div class="progress flex-grow-1" style="height: 24px;">
+                                        {% with exp_pct=high_risk_metrics.avg_experience|default:0|multiply:10 %}
                                         <div class="progress-bar bg-warning" role="progressbar" 
-                                             style="width: {{ high_risk_metrics.avg_years|multiply:10|floatformat:1 }}%;" 
-                                             aria-valuenow="{{ high_risk_metrics.avg_years }}" 
+                                             style="width: {% if exp_pct > 100 %}100{% else %}{{ exp_pct|floatformat:1 }}{% endif %}%;" 
+                                             aria-valuenow="{{ high_risk_metrics.avg_experience|default:0 }}" 
                                              aria-valuemin="0" 
                                              aria-valuemax="10">
+                                            <span class="progress-label">
+                                                {% if exp_pct > 100 %}MAX{% else %}{{ exp_pct|floatformat:0 }}%{% endif %}
+                                            </span>
                                         </div>
+                                        {% endwith %}
                                     </div>
                                 </div>
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <span class="me-2">{{ low_risk_metrics.avg_years|floatformat:1 }}</span>
-                                    <div class="progress flex-grow-1" style="height: 20px;">
+                                    <span class="metric-value me-2">{{ low_risk_metrics.avg_experience|default:'-'|floatformat:1 }}</span>
+                                    <div class="progress flex-grow-1" style="height: 24px;">
+                                        {% with exp_pct=low_risk_metrics.avg_experience|default:0|multiply:10 %}
                                         <div class="progress-bar bg-success" role="progressbar" 
-                                             style="width: {{ low_risk_metrics.avg_years|multiply:10|floatformat:1 }}%;" 
-                                             aria-valuenow="{{ low_risk_metrics.avg_years }}" 
+                                             style="width: {% if exp_pct > 100 %}100{% else %}{{ exp_pct|floatformat:1 }}{% endif %}%;" 
+                                             aria-valuenow="{{ low_risk_metrics.avg_experience|default:0 }}" 
                                              aria-valuemin="0" 
                                              aria-valuemax="10">
+                                            <span class="progress-label">
+                                                {% if exp_pct > 100 %}MAX{% else %}{{ exp_pct|floatformat:0 }}%{% endif %}
+                                            </span>
                                         </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="align-middle"><strong>Job Satisfaction (1-4)</strong></td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <span class="me-2">{{ high_risk_metrics.avg_satisfaction|floatformat:1 }}</span>
-                                    <div class="progress flex-grow-1" style="height: 20px;">
-                                        <div class="progress-bar bg-warning" role="progressbar" 
-                                             style="width: {{ high_risk_metrics.avg_satisfaction|multiply:25|floatformat:1 }}%;" 
-                                             aria-valuenow="{{ high_risk_metrics.avg_satisfaction }}" 
-                                             aria-valuemin="0" 
-                                             aria-valuemax="4">
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <span class="me-2">{{ low_risk_metrics.avg_satisfaction|floatformat:1 }}</span>
-                                    <div class="progress flex-grow-1" style="height: 20px;">
-                                        <div class="progress-bar bg-success" role="progressbar" 
-                                             style="width: {{ low_risk_metrics.avg_satisfaction|multiply:25|floatformat:1 }}%;" 
-                                             aria-valuenow="{{ low_risk_metrics.avg_satisfaction }}" 
-                                             aria-valuemin="0" 
-                                             aria-valuemax="4">
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="align-middle"><strong>Work-Life Balance (1-4)</strong></td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <span class="me-2">{{ high_risk_metrics.avg_work_life|floatformat:1 }}</span>
-                                    <div class="progress flex-grow-1" style="height: 20px;">
-                                        <div class="progress-bar bg-warning" role="progressbar" 
-                                             style="width: {{ high_risk_metrics.avg_work_life|multiply:25|floatformat:1 }}%;" 
-                                             aria-valuenow="{{ high_risk_metrics.avg_work_life }}" 
-                                             aria-valuemin="0" 
-                                             aria-valuemax="4">
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <span class="me-2">{{ low_risk_metrics.avg_work_life|floatformat:1 }}</span>
-                                    <div class="progress flex-grow-1" style="height: 20px;">
-                                        <div class="progress-bar bg-success" role="progressbar" 
-                                             style="width: {{ low_risk_metrics.avg_work_life|multiply:25|floatformat:1 }}%;" 
-                                             aria-valuenow="{{ low_risk_metrics.avg_work_life }}" 
-                                             aria-valuemin="0" 
-                                             aria-valuemax="4">
-                                        </div>
+                                        {% endwith %}
                                     </div>
                                 </div>
                             </td>
@@ -274,15 +270,49 @@
                 </table>
             </div>
         </div>
-        <div class="card-footer bg-light small">
-            <ul class="mb-0">
-                <li><strong>Age:</strong> Scaled relative to 60 years</li>
-                <li><strong>Monthly Income:</strong> Scaled relative to $10,000</li>
-                <li><strong>Years at Company:</strong> Scaled relative to 10 years</li>
-                <li><strong>Satisfaction & Work-Life Balance:</strong> Scaled on 1-4 range</li>
-            </ul>
+    </div>
+
+    <!-- Prediction History -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h3 class="card-title mb-0">Prediction History</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover prediction-history-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Employee Name</th>
+                            <th>Department</th>
+                            <th>Risk Level</th>
+                            <th>Risk Score</th>
+                            <th>Prediction Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prediction in predictions %}
+                        <tr>
+                            <td>{{ prediction.employee_name }}</td>
+                            <td>{{ prediction.function }}</td>
+                            <td>
+                                <span class="badge {% if 'High' in prediction.risk_level %}bg-warning text-dark{% else %}bg-success text-white{% endif %}">
+                                    {{ prediction.risk_level }}
+                                </span>
+                            </td>
+                            <td>{{ prediction.risk_score|floatformat:1 }}%</td>
+                            <td>{{ prediction.prediction_date|date:"M d, Y H:i" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No prediction history available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+
     {% endif %}
 </div>
 {% endblock %}

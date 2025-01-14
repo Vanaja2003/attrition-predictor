@@ -14,14 +14,15 @@
                 <tr>
                     <th>Date</th>
                     <th>Employee Name</th>
-                    <th>Department</th>
-                    <th>Job Role</th>
+                    <th>Location</th>
+                    <th>Function</th>
+                    <th>Group</th>
+                    <th>Experience</th>
+                    <th>Tenure</th>
                     <th>Age</th>
-                    <th>Monthly Income</th>
-                    <th>Years at Company</th>
-                    <th>Job Satisfaction</th>
-                    <th>Work-Life Balance</th>
-                    <th>Prediction</th>
+                    <th>Promoted</th>
+                    <th>Job Match</th>
+                    <th>Risk Level</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,22 +30,21 @@
                 <tr>
                     <td>{{ prediction.prediction_date|date:"Y-m-d H:i" }}</td>
                     <td>{{ prediction.employee_name }}</td>
-                    <td>{{ prediction.department }}</td>
-                    <td>{{ prediction.job_role }}</td>
+                    <td>{{ prediction.location }}</td>
+                    <td>{{ prediction.function }}</td>
+                    <td>{{ prediction.emp_group }}</td>
+                    <td>{{ prediction.experience }} years</td>
+                    <td>{{ prediction.tenure_group }}</td>
                     <td>{{ prediction.age }}</td>
-                    <td>${{ prediction.monthly_income|floatformat:0 }}</td>
-                    <td>{{ prediction.years_at_company }}</td>
                     <td>
-                        {% if prediction.job_satisfaction == 1 %}Low
-                        {% elif prediction.job_satisfaction == 2 %}Medium
-                        {% elif prediction.job_satisfaction == 3 %}High
-                        {% else %}Very High{% endif %}
+                        <span class="badge {% if prediction.promoted %}bg-success{% else %}bg-secondary{% endif %}">
+                            {% if prediction.promoted %}Yes{% else %}No{% endif %}
+                        </span>
                     </td>
                     <td>
-                        {% if prediction.work_life_balance == 1 %}Poor
-                        {% elif prediction.work_life_balance == 2 %}Fair
-                        {% elif prediction.work_life_balance == 3 %}Good
-                        {% else %}Excellent{% endif %}
+                        <span class="badge {% if prediction.job_role_match %}bg-success{% else %}bg-warning{% endif %}">
+                            {% if prediction.job_role_match %}Yes{% else %}No{% endif %}
+                        </span>
                     </td>
                     <td>
                         <span class="badge {% if prediction.prediction_result %}bg-warning{% else %}bg-success{% endif %}">
@@ -58,7 +58,7 @@
     </div>
     {% else %}
     <div class="alert alert-info">
-        No predictions have been made yet. <a href="{% url 'predict' %}" class="alert-link">Make a prediction</a>
+        No predictions have been made yet. Try making a prediction first!
     </div>
     {% endif %}
 </div>
