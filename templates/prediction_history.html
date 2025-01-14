@@ -3,6 +3,25 @@
 
 {% block title %}Prediction History{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Table styles */
+    .table tbody td,
+    .table thead th {
+        color: #000000 !important;
+    }
+    .table tbody tr {
+        color: #000000 !important;
+    }
+    .table tbody tr:hover td {
+        color: #000000 !important;
+    }
+    .badge {
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <h1 class="mb-4">Prediction History</h1>
