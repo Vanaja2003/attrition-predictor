@@ -173,6 +173,8 @@ def insights(request):
         'monthly_predictions': monthly_predictions,
         'department_analysis': department_analysis,
         'age_analysis': age_analysis,
+        'high_risk_percentage': risk_percentage,
+        'low_risk_percentage': 100 - risk_percentage
     }
     
     print("Insights data:", context)
