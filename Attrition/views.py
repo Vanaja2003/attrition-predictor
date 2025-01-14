@@ -82,13 +82,13 @@ def Attrition_rate_finder(request):
             
             return render(request, 'attrition_form.html', {'result': results})
             
-        except Exception as e:
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({
-                    'error': str(e),
-                    'success': False
-                })
-            return render(request, 'attrition_form.html', {'error': str(e)})
+    except Exception as e:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'error': str(e),
+                'success': False
+            })
+        return render(request, 'attrition_form.html', {'error': str(e)})
     
     return render(request, 'attrition_form.html')
 
