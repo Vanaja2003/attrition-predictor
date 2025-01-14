@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-4">Welcome to Attrition Rate Predictor</h1>
+        <p class="lead">Predict employee attrition using advanced machine learning algorithms</p>
+        <a href="{% url 'predict' %}" class="btn btn-light btn-lg mt-3">Start Prediction</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card feature-card">
+                <div class="card-body text-center">
+                    <h3 class="card-title">Accurate Predictions</h3>
+                    <p class="card-text">Our ML model provides highly accurate attrition predictions based on various employee factors.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card feature-card">
+                <div class="card-body text-center">
+                    <h3 class="card-title">Easy to Use</h3>
+                    <p class="card-text">Simple interface to input employee data and get instant predictions.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card feature-card">
+                <div class="card-body text-center">
+                    <h3 class="card-title">Data Insights</h3>
+                    <p class="card-text">Get valuable insights about factors affecting employee attrition.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <h2>How It Works</h2>
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card feature-card">
+                    <div class="card-body">
+                        <h4>1. Input Data</h4>
+                        <p>Enter employee information including demographics and work details.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card feature-card">
+                    <div class="card-body">
+                        <h4>2. Analysis</h4>
+                        <p>Our ML model analyzes the data using proven algorithms.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card feature-card">
+                    <div class="card-body">
+                        <h4>3. Get Results</h4>
+                        <p>Receive detailed predictions about attrition probability.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

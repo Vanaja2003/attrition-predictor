@@ -1,0 +1,288 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load multiply %}
+
+{% block title %}Attrition Insights{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Attrition Insights</h1>
+
+    {% if total_predictions == 0 %}
+    <div class="alert alert-info">
+        No predictions have been made yet. <a href="{% url 'predict' %}" class="alert-link">Make a prediction</a> to see insights.
+    </div>
+    {% else %}
+    <!-- Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Total Predictions</h5>
+                    <h2 class="card-text display-4">{{ total_predictions }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-warning text-dark">
+                <div class="card-body text-center">
+                    <h5 class="card-title">High Risk Rate</h5>
+                    <h2 class="card-text display-4">{{ high_risk_percentage|floatformat:1 }}%</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Low Risk Rate</h5>
+                    <h2 class="card-text display-4">{{ low_risk_percentage|floatformat:1 }}%</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Department Analysis -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h3 class="card-title mb-0">Department Analysis</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Department</th>
+                            <th>Total Employees</th>
+                            <th>High Risk</th>
+                            <th>Low Risk</th>
+                            <th style="width: 30%;">Risk Distribution</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dept in department_analysis %}
+                        <tr>
+                            <td class="align-middle"><strong>{{ dept.department|title }}</strong></td>
+                            <td class="align-middle">{{ dept.total }}</td>
+                            <td class="align-middle">{{ dept.high_risk }} ({{ dept.high_risk_percentage|floatformat:1 }}%)</td>
+                            <td class="align-middle">{{ dept.low_risk }} ({{ dept.low_risk_percentage|floatformat:1 }}%)</td>
+                            <td class="align-middle">
+                                <div class="d-flex align-items-center">
+                                    <div class="progress flex-grow-1" style="height: 24px;">
+                                        {% if dept.high_risk_percentage > 0 %}
+                                        <div class="progress-bar bg-warning" role="progressbar" 
+                                             style="width: {{ dept.high_risk_percentage }}%;" 
+                                             aria-valuenow="{{ dept.high_risk_percentage }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100">
+                                            {% if dept.high_risk_percentage >= 15 %}
+                                            <span class="fw-bold">{{ dept.high_risk_percentage|floatformat:1 }}%</span>
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                        {% if dept.low_risk_percentage > 0 %}
+                                        <div class="progress-bar bg-success" role="progressbar" 
+                                             style="width: {{ dept.low_risk_percentage }}%;" 
+                                             aria-valuenow="{{ dept.low_risk_percentage }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100">
+                                            {% if dept.low_risk_percentage >= 15 %}
+                                            <span class="fw-bold">{{ dept.low_risk_percentage|floatformat:1 }}%</span>
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="ms-2 small text-muted">
+                                        {% if dept.high_risk_percentage < 15 and dept.high_risk_percentage > 0 %}
+                                        <span class="text-warning">H: {{ dept.high_risk_percentage|floatformat:1 }}%</span>
+                                        {% endif %}
+                                        {% if dept.low_risk_percentage < 15 and dept.low_risk_percentage > 0 %}
+                                        <span class="text-success">L: {{ dept.low_risk_percentage|floatformat:1 }}%</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparative Analysis -->
+    <div class="card">
+        <div class="card-header bg-light">
+            <h3 class="card-title mb-0">High Risk vs Low Risk Profile</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 25%;">Metric</th>
+                            <th style="width: 37.5%;" class="text-warning">High Risk Average</th>
+                            <th style="width: 37.5%;" class="text-success">Low Risk Average</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="align-middle"><strong>Age</strong></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">{{ high_risk_metrics.avg_age|floatformat:1 }}</span>
+                                    <div class="progress flex-grow-1" style="height: 20px;">
+                                        <div class="progress-bar bg-warning" role="progressbar" 
+                                             style="width: {{ high_risk_metrics.avg_age|multiply:1.67|floatformat:1 }}%;" 
+                                             aria-valuenow="{{ high_risk_metrics.avg_age }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="60">
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">{{ low_risk_metrics.avg_age|floatformat:1 }}</span>
+                                    <div class="progress flex-grow-1" style="height: 20px;">
+                                        <div class="progress-bar bg-success" role="progressbar" 
+                                             style="width: {{ low_risk_metrics.avg_age|multiply:1.67|floatformat:1 }}%;" 
+                                             aria-valuenow="{{ low_risk_metrics.avg_age }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="60">
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle"><strong>Monthly Income</strong></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">${{ high_risk_metrics.avg_income|floatformat:0 }}</span>
+                                    <div class="progress flex-grow-1" style="height: 20px;">
+                                        <div class="progress-bar bg-warning" role="progressbar" 
+                                             style="width: {{ high_risk_metrics.avg_income|multiply:0.01|floatformat:1 }}%;" 
+                                             aria-valuenow="{{ high_risk_metrics.avg_income }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="10000">
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">${{ low_risk_metrics.avg_income|floatformat:0 }}</span>
+                                    <div class="progress flex-grow-1" style="height: 20px;">
+                                        <div class="progress-bar bg-success" role="progressbar" 
+                                             style="width: {{ low_risk_metrics.avg_income|multiply:0.01|floatformat:1 }}%;" 
+                                             aria-valuenow="{{ low_risk_metrics.avg_income }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="10000">
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle"><strong>Years at Company</strong></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">{{ high_risk_metrics.avg_years|floatformat:1 }}</span>
+                                    <div class="progress flex-grow-1" style="height: 20px;">
+                                        <div class="progress-bar bg-warning" role="progressbar" 
+                                             style="width: {{ high_risk_metrics.avg_years|multiply:10|floatformat:1 }}%;" 
+                                             aria-valuenow="{{ high_risk_metrics.avg_years }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="10">
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">{{ low_risk_metrics.avg_years|floatformat:1 }}</span>
+                                    <div class="progress flex-grow-1" style="height: 20px;">
+                                        <div class="progress-bar bg-success" role="progressbar" 
+                                             style="width: {{ low_risk_metrics.avg_years|multiply:10|floatformat:1 }}%;" 
+                                             aria-valuenow="{{ low_risk_metrics.avg_years }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="10">
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle"><strong>Job Satisfaction (1-4)</strong></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">{{ high_risk_metrics.avg_satisfaction|floatformat:1 }}</span>
+                                    <div class="progress flex-grow-1" style="height: 20px;">
+                                        <div class="progress-bar bg-warning" role="progressbar" 
+                                             style="width: {{ high_risk_metrics.avg_satisfaction|multiply:25|floatformat:1 }}%;" 
+                                             aria-valuenow="{{ high_risk_metrics.avg_satisfaction }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="4">
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">{{ low_risk_metrics.avg_satisfaction|floatformat:1 }}</span>
+                                    <div class="progress flex-grow-1" style="height: 20px;">
+                                        <div class="progress-bar bg-success" role="progressbar" 
+                                             style="width: {{ low_risk_metrics.avg_satisfaction|multiply:25|floatformat:1 }}%;" 
+                                             aria-valuenow="{{ low_risk_metrics.avg_satisfaction }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="4">
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle"><strong>Work-Life Balance (1-4)</strong></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">{{ high_risk_metrics.avg_work_life|floatformat:1 }}</span>
+                                    <div class="progress flex-grow-1" style="height: 20px;">
+                                        <div class="progress-bar bg-warning" role="progressbar" 
+                                             style="width: {{ high_risk_metrics.avg_work_life|multiply:25|floatformat:1 }}%;" 
+                                             aria-valuenow="{{ high_risk_metrics.avg_work_life }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="4">
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">{{ low_risk_metrics.avg_work_life|floatformat:1 }}</span>
+                                    <div class="progress flex-grow-1" style="height: 20px;">
+                                        <div class="progress-bar bg-success" role="progressbar" 
+                                             style="width: {{ low_risk_metrics.avg_work_life|multiply:25|floatformat:1 }}%;" 
+                                             aria-valuenow="{{ low_risk_metrics.avg_work_life }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="4">
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-light small">
+            <ul class="mb-0">
+                <li><strong>Age:</strong> Scaled relative to 60 years</li>
+                <li><strong>Monthly Income:</strong> Scaled relative to $10,000</li>
+                <li><strong>Years at Company:</strong> Scaled relative to 10 years</li>
+                <li><strong>Satisfaction & Work-Life Balance:</strong> Scaled on 1-4 range</li>
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
