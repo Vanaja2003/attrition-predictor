@@ -1,14 +1,33 @@
-*.pyc
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
 *.pyo
 *.pyd
 .Python
+
+# Django
+*.log
+*.pot
+db.sqlite3
+media/
+staticfiles/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment
+.env
 env/
 venv/
+ENV/
 .env/
 .venv/
-pip-log.txt
-pip-delete-this-directory.txt
+
+# Testing and Coverage
 .tox/
 .coverage
 .coverage.*
@@ -16,7 +35,11 @@ pip-delete-this-directory.txt
 nosetests.xml
 coverage.xml
 *.cover
-*.log
 .pytest_cache/
+
+# Jupyter
 .ipynb_checkpoints
-db.sqlite3
+
+# Logs and temp files
+pip-log.txt
+pip-delete-this-directory.txt

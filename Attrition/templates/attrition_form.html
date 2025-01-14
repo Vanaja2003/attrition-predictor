@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Attrition Prediction Form{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="form-header text-center mb-4">
+        <h1>Employee Attrition Prediction</h1>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-danger mb-4">
+        <strong>Error:</strong> {{ error }}
+    </div>
+    {% endif %}
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form id="attritionForm" method="post" action="" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <div class="row">
+                    <!-- Left Column - Personal Information -->
+                    <div class="col-md-6">
+                        <h5 class="mb-3">Personal Information</h5>
+                        
+                        <div class="mb-3">
+                            <label for="personName" class="form-label">Employee Name</label>
+                            <input type="text" class="form-control" id="personName" name="Person Name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="age" class="form-label">Age</label>
+                            <input type="number" class="form-control" id="age" name="age" required min="18" max="100">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="gender" class="form-label">Gender</label>
+                            <select class="form-select" id="gender" name="gender" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="marital" class="form-label">Marital Status</label>
+                            <select class="form-select" id="marital" name="Marital" required>
+                                <option value="">Select Marital Status</option>
+                                <option value="Single">Single</option>
+                                <option value="Married">Married</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="location" class="form-label">Location</label>
+                            <select class="form-select" id="location" name="location" required>
+                                <option value="">Select Location</option>
+                                <option value="Bangalore">Bangalore</option>
+                                <option value="Pune">Pune</option>
+                                <option value="New Delhi">New Delhi</option>
+                                <option value="Chennai">Chennai</option>
+                                <option value="Noida">Noida</option>
+                                <option value="Hyderabad">Hyderabad</option>
+                                <option value="Madurai">Madurai</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Professional Information -->
+                    <div class="col-md-6">
+                        <h5 class="mb-3">Professional Information</h5>
+                        
+                        <div class="mb-3">
+                            <label for="empGroup" class="form-label">Employee Group</label>
+                            <select class="form-select" id="empGroup" name="emp-group" required>
+                                <option value="">Select Employee Group</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="function" class="form-label">Function</label>
+                            <select class="form-select" id="function" name="function" required>
+                                <option value="">Select Function</option>
+                                <option value="Sales">Sales</option>
+                                <option value="Operation">Operation</option>
+                                <option value="Support">Support</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="experience" class="form-label">Experience (Years)</label>
+                            <input type="number" class="form-control" id="experience" name="experience" required min="0" max="50" step="0.1">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="tenureGroup" class="form-label">Tenure Group</label>
+                            <select class="form-select" id="tenureGroup" name="tenure group" required>
+                                <option value="">Select Tenure Group</option>
+                                <option value="<=1">&lt;=1</option>
+                                <option value="1-2">1-2</option>
+                                <option value="2-5">2-5</option>
+                                <option value=">5">&gt;5</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="hiring" class="form-label">Hiring Source</label>
+                            <select class="form-select" id="hiring" name="Hiring" required>
+                                <option value="">Select Hiring Source</option>
+                                <option value="Direct">Direct</option>
+                                <option value="Employee Referral">Employee Referral</option>
+                                <option value="Agency">Agency</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="promoted" class="form-label">Promoted in Last 24 Months</label>
+                            <select class="form-select" id="promoted" name="Promoted" required>
+                                <option value="">Select Promotion Status</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="job" class="form-label">Job Role Match</label>
+                            <select class="form-select" id="job" name="Job" required>
+                                <option value="">Select Job Role Match</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg px-5" id="predictButton">
+                        Predict Attrition
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Prediction Result Section -->
+    <div class="card shadow-sm mb-4" id="predictionResult" style="display: none;">
+        <div class="card-body">
+            <div id="resultContent" class="text-center">
+                <!-- Results will be inserted here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Developer Options -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="text-center">
+                <button class="btn btn-sm btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#testDataButtons" aria-expanded="false" aria-controls="testDataButtons">
+                    <i class="bi bi-gear-fill"></i> Developer Options
+                </button>
+                <div class="collapse mt-3" id="testDataButtons">
+                    <div class="d-flex justify-content-center gap-2">
+                        <button type="button" class="btn btn-warning" onclick="populateTestData()">Fill with High Risk Example</button>
+                        <button type="button" class="btn btn-success" onclick="populateTrueTestData()">Fill with Low Risk Example</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('attritionForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const formData = new FormData(form);
+    const resultSection = document.getElementById('predictionResult');
+    const resultContent = document.getElementById('resultContent');
+    
+    fetch('', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Update result content
+        resultContent.innerHTML = `
+            <h4 class="mb-3">Prediction Result</h4>
+            <p class="display-6 mb-2">Attrition Prediction: ${data.result}</p>
+            <p class="mb-0">${data.result === 'Yes' ? 
+                'This employee might be at risk of leaving.' : 
+                'This employee is likely to stay.'}</p>
+        `;
+        
+        // Set appropriate text color
+        resultContent.className = data.result === 'Yes' ? 'text-warning text-center' : 'text-success text-center';
+        
+        // Show result section and scroll to it
+        resultSection.style.display = 'block';
+        resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        resultContent.innerHTML = `
+            <div class="text-danger">
+                <h4 class="mb-3">Error</h4>
+                <p>An error occurred while processing your request. Please try again.</p>
+            </div>
+        `;
+        resultSection.style.display = 'block';
+        resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+});
+
+function populateTestData() {
+    document.getElementById('personName').value = 'John Doe';
+    document.getElementById('location').value = 'Bangalore';
+    document.getElementById('empGroup').value = 'A';
+    document.getElementById('function').value = 'Sales';
+    document.getElementById('gender').value = 'Male';
+    document.getElementById('tenureGroup').value = '2-5';
+    document.getElementById('experience').value = '5';
+    document.getElementById('age').value = '30';
+    document.getElementById('marital').value = 'Single';
+    document.getElementById('hiring').value = 'Direct';
+    document.getElementById('promoted').value = 'No';
+    document.getElementById('job').value = 'No';
+}
+
+function populateTrueTestData() {
+    document.getElementById('personName').value = 'Jane Smith';
+    document.getElementById('location').value = 'Pune';
+    document.getElementById('empGroup').value = 'B';
+    document.getElementById('function').value = 'Operation';
+    document.getElementById('gender').value = 'Female';
+    document.getElementById('tenureGroup').value = '1-2';
+    document.getElementById('experience').value = '3';
+    document.getElementById('age').value = '28';
+    document.getElementById('marital').value = 'Married';
+    document.getElementById('hiring').value = 'Employee Referral';
+    document.getElementById('promoted').value = 'Yes';
+    document.getElementById('job').value = 'Yes';
+}
+</script>
+{% endblock %}

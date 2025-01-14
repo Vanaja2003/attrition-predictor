@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Attrition Insights{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Attrition Insights</h1>
+
+    <!-- Overall Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Total Predictions</h5>
+                    <p class="card-text display-6">{{ total_predictions }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">At Risk</h5>
+                    <p class="card-text display-6">{{ at_risk_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Not At Risk</h5>
+                    <p class="card-text display-6">{{ not_at_risk_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white {% if risk_percentage > 30 %}bg-danger{% else %}bg-info{% endif %}">
+                <div class="card-body">
+                    <h5 class="card-title">Risk Percentage</h5>
+                    <p class="card-text display-6">{{ risk_percentage|floatformat:1 }}%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Department Analysis -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Department Analysis</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Department</th>
+                            <th>Total Employees</th>
+                            <th>At Risk</th>
+                            <th>Risk Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dept in department_analysis %}
+                        <tr>
+                            <td>{{ dept.function }}</td>
+                            <td>{{ dept.total }}</td>
+                            <td>{{ dept.at_risk }}</td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" 
+                                         style="width: {% widthratio dept.at_risk dept.total 100 %}%">
+                                        {% widthratio dept.at_risk dept.total 100 %}%
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Age Group Analysis -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Age Group Analysis</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Age Group</th>
+                            <th>Total Employees</th>
+                            <th>At Risk</th>
+                            <th>Risk Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for age in age_analysis %}
+                        <tr>
+                            <td>{{ age.group }}</td>
+                            <td>{{ age.total }}</td>
+                            <td>{{ age.at_risk }}</td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" 
+                                         style="width: {{ age.percentage|floatformat:1 }}%">
+                                        {{ age.percentage|floatformat:1 }}%
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Trend -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Monthly Trend</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Total Predictions</th>
+                            <th>At Risk</th>
+                            <th>Risk Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for month in monthly_predictions %}
+                        <tr>
+                            <td>{{ month.month|date:"F Y" }}</td>
+                            <td>{{ month.total }}</td>
+                            <td>{{ month.at_risk }}</td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" 
+                                         style="width: {% widthratio month.at_risk month.total 100 %}%">
+                                        {% widthratio month.at_risk month.total 100 %}%
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
